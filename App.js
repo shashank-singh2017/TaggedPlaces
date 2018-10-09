@@ -68,6 +68,7 @@ export default class App extends Component<Props> {
                 return <Text key={place}> {place} </Text>;
             })}
         </View>
+        
       </View>
 
     );
