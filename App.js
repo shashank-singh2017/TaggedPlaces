@@ -9,12 +9,9 @@
 import React, {Component} from 'react';
 import {Platform, StyleSheet, Text, View, TextInput, Button} from 'react-native';
 
-const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
-  android:
-    'Double tap R on your keyboard to reload,\n' +
-    'Shake or press menu button for dev menu',
-});
+import ListItem from './src/components/ListItem/ListItem';
+import PlaceInput from './src/components/PlaceInput/PlaceInput';
+import PlaceList from './src/components/PlaceList/PlaceList';
 
 type Props = {};
 export default class App extends Component<Props> {
@@ -27,50 +24,37 @@ export default class App extends Component<Props> {
       places: []
   }
 
-  textInputChangeHandler = (val) => {
-      this.setState({
-          placeNameInput: val
-      });
-  }
-
-  handleButtonClick = () => {
-      if(this.state.placeNameInput.trim() === "") {
-          return;
-      }
+  onPlaceAdded = (placeName) => {
 
       this.setState(prevState => {
           return {
-              places: prevState.places.concat(this.state.placeNameInput)
+              places: prevState.places.concat(placeName)
+          }
+      });
+  }
+
+  onItemPressed = (indexToBeDeleted) => {
+      // on Press of the item, we are trying to delete the item.
+
+      this.setState(prevState => {
+          return {
+              places: prevState.places.filter((place, i) => {
+                  return i !== indexToBeDeleted;
+              })
           }
       });
   }
 
   render() {
     return (
-      <View style={styles.container}>
 
-        <View style={styles.inputContainer}>
-            <TextInput
-            placeholder="write your awesome place"
-            onChangeText={this.textInputChangeHandler}
-            style={styles.inputBox}
-            />
+        <View style={styles.container}>
 
-            <Button
-            title="Add"
-            style={styles.inputButton}
-            onPress={this.handleButtonClick}
-            />
+            <PlaceInput onPlaceAdded={this.onPlaceAdded} />
+
+            <PlaceList places={this.state.places} onItemPressed={this.onItemPressed}/>
+
         </View>
-
-        <View>
-            {this.state.places.map(place => {
-                return <Text key={place}> {place} </Text>;
-            })}
-        </View>
-        
-      </View>
-
     );
   }
 }
@@ -83,21 +67,5 @@ const styles = StyleSheet.create({
       justifyContent: 'flex-start',
       alignItems: 'center',
       backgroundColor: '#F5FCFF'
-  },
-  inputContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      width: '90%',
-      alignItems: 'center'
-  },
-  inputBox: {
-      borderWidth: 1.5,
-      height: 30,
-      width: "90%",
-      borderRadius: 5
-  },
-  inputButton: {
-      borderWidth: 2,
-      backgroundColor: '#000000'
   }
 });
