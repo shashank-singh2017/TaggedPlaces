@@ -13,6 +13,9 @@ import ListItem from './src/components/ListItem/ListItem';
 import PlaceInput from './src/components/PlaceInput/PlaceInput';
 import PlaceList from './src/components/PlaceList/PlaceList';
 
+//importing image for use in the list
+import PlaceImage from './src/assets/sample.jpeg';
+
 type Props = {};
 export default class App extends Component<Props> {
 
@@ -20,7 +23,6 @@ export default class App extends Component<Props> {
   * Defining state as in react.
   */
   state = {
-      placeNameInput: '',
       places: []
   }
 
@@ -28,18 +30,23 @@ export default class App extends Component<Props> {
 
       this.setState(prevState => {
           return {
-              places: prevState.places.concat(placeName)
+              places: prevState.places.concat(
+                  {
+                      key: Math.random().toString(),
+                      value: placeName,
+                      image: PlaceImage
+                  }
+               )
           }
       });
   }
 
-  onItemPressed = (indexToBeDeleted) => {
+  onItemPressed = (keyToBeDeleted) => {
       // on Press of the item, we are trying to delete the item.
-
       this.setState(prevState => {
           return {
-              places: prevState.places.filter((place, i) => {
-                  return i !== indexToBeDeleted;
+              places: prevState.places.filter(place => {
+                  return place.key !== keyToBeDeleted;
               })
           }
       });
@@ -52,7 +59,10 @@ export default class App extends Component<Props> {
 
             <PlaceInput onPlaceAdded={this.onPlaceAdded} />
 
-            <PlaceList places={this.state.places} onItemPressed={this.onItemPressed}/>
+            <PlaceList
+                places={this.state.places}
+                onItemPressed={this.onItemPressed}
+            />
 
         </View>
     );
