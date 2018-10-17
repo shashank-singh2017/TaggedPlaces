@@ -12,6 +12,7 @@ import {Platform, StyleSheet, Text, View, TextInput, Button} from 'react-native'
 import ListItem from './src/components/ListItem/ListItem';
 import PlaceInput from './src/components/PlaceInput/PlaceInput';
 import PlaceList from './src/components/PlaceList/PlaceList';
+import PlaceDetail from './src/components/PlaceDetail/PlaceDetail';
 
 //importing image for use in the list
 import PlaceImage from './src/assets/sample.jpeg';
@@ -23,7 +24,8 @@ export default class App extends Component<Props> {
   * Defining state as in react.
   */
   state = {
-      places: []
+      places: [],
+      selectedPlace: null
   }
 
   onPlaceAdded = (placeName) => {
@@ -41,14 +43,32 @@ export default class App extends Component<Props> {
       });
   }
 
-  onItemPressed = (keyToBeDeleted) => {
-      // on Press of the item, we are trying to delete the item.
+  onItemPressed = (keySelected) => {
+
+    // Now we want to store the details on pressing of the item so that we can pass to the modal.
+    this.setState(prevState => {
+        return {
+            selectedPlace: prevState.places.find(place => {
+                return place.key === keySelected;
+            })
+        };
+    })
+  }
+
+  closeModalHandler = () => {
+      this.setState({
+         selectedPlace: null
+      });
+  }
+
+  deleteItemHandler = () => {
       this.setState(prevState => {
           return {
               places: prevState.places.filter(place => {
-                  return place.key !== keyToBeDeleted;
-              })
-          }
+                  return place.key !== prevState.selectedPlace.key;
+              }),
+              selectedPlace: null
+          };
       });
   }
 
@@ -57,8 +77,12 @@ export default class App extends Component<Props> {
 
         <View style={styles.container}>
 
+            <PlaceDetail
+                selectedPlace={this.state.selectedPlace}
+                onItemDeleted={this.deleteItemHandler}
+                onModalClosed={this.closeModalHandler}
+            />
             <PlaceInput onPlaceAdded={this.onPlaceAdded} />
-
             <PlaceList
                 places={this.state.places}
                 onItemPressed={this.onItemPressed}
